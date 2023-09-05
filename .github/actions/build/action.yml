@@ -2,7 +2,7 @@ name: 'Build'
 description: 'Sets up the repository'
 runs:
   using: 'composite'
-  stes:
+  steps:
     - name: Install pnpm
       uses: pnpm/action-setup@v2
       with:

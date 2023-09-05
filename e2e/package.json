@@ -1,0 +1,22 @@
+{
+  "name": "e2e",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "../scripts/run-e2e.sh",
+    "test:headed": "../scripts/run-e2e.sh --headed"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@faker-js/faker": "^8.0.2",
+    "@playwright/test": "^1.37.1",
+    "@types/node": "18.11.12",
+    "typescript": "^5.2.2"
+  },
+  "prisma": {
+    "schema": "../prisma/schema.prisma"
+  }
+}

@@ -12,6 +12,7 @@ describe('tags.service', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     // adding useless commit
+    // adding useless commit2
   })
   describe('upsertTags', () => {
     it('should return a list of tagIds', async () => {

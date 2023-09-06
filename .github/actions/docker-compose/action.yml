@@ -3,9 +3,12 @@ description: 'Installs docker-compose command'
 runs:
   using: 'composite'
   steps:
+    - name: Create folder for Docker plugins
+      shell: bash
+      run: sudo mkdir -p /usr/local/lib/docker/cli-plugins
     - name: Download Docker-Compose plugin
       shell: bash
-      run: curl -SL https://github.com/docker/compose/releases/download/v2.21.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+      run: sudo curl -SL https://github.com/docker/compose/releases/download/v2.21.0/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins
     - name: Make plugin executable
       shell: bash
-      run: sudo chmod +x /usr/local/bin/docker-compose
+      run: sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose

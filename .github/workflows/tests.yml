@@ -37,7 +37,7 @@ jobs:
       - uses: ./.github/actions/playwright
       - uses: ./.github/actions/database
       - name: Run e2e tests
-        run: s cd ${{ github.workspace }}/e2e && npx playwright test --shard=${{ matrix.shard }}
+        run: cd ${{ github.workspace }}/e2e && npx playwright test --shard=${{ matrix.shard }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:

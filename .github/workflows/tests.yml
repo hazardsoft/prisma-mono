@@ -14,6 +14,10 @@ jobs:
         run: pnpm test:backend:unit
   integration-tests:
     runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: http://localhost:3000
+      API_SECRET: 84f79269b107d58a9b40bda7ec7af0bf20fab80e323887e4b8219fefc65042d9
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/quotes
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/build

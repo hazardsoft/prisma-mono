@@ -4,8 +4,4 @@ runs:
   using: 'composite'
   steps:
     - name: Download docker compose plugin
-      shell: bash
-      run: curl -SL https://github.com/docker/compose/releases/download/v2.21.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-    - name: Make plugin executable
-      shell: bash
-      run: sudo chmod +x /usr/local/bin/docker-compose
+      run: apt-get install docker-compose-plugin=2.21.0

@@ -14,7 +14,7 @@ env:
   CI: 1
 
 jobs:
-  tests:
+  unit-and-integration-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,12 +24,23 @@ jobs:
       - uses: ./.github/actions/docker-compose
       - name: Run integration tests
         run: pnpm test:backend:int
+  e2e-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1/1, 1/2, 1/3, 1/4]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/build
+      - uses: ./.github/actions/docker-compose
       - uses: ./.github/actions/playwright
+      - uses: ./.github/actions/database
       - name: Run e2e tests
-        run: pnpm test:e2e
+        run: s cd ${{ github.workspace }}/e2e && pnpm dlx playwright test --shard=${{ matrix.shard }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-report
-          path: ${{ github.workspace }}/e2e/playwright-report
+          name: blob-report
+          path: ${{ github.workspace }}/e2e/blob-report
           retention-days: 3

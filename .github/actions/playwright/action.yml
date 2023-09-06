@@ -1,0 +1,8 @@
+name: 'Playwright'
+description: 'Install Playwright and all browsers'
+runs:
+  using: composite
+  steps:
+    - name: Install Playwright with browsers'
+      shell: bash
+      run: pnpm dlx playwright install --with-deps 

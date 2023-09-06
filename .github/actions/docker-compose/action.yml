@@ -4,4 +4,5 @@ runs:
   using: 'composite'
   steps:
     - name: Download docker compose plugin
+      shell: bash
       run: apt-get install docker-compose-plugin=2.21.0

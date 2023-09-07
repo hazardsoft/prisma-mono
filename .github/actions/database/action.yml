@@ -5,4 +5,4 @@ runs:
   steps:
     - name: Run Database
       shell: bash
-      run: . ${{ github.workspace }}/scripts/db-startup.sh
+      run: source ${{ github.workspace }}/scripts/db-startup.sh

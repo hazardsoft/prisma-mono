@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 docker compose up --detach
-DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 echo "Healthcheck script is assumed to be found at:"
-echo $DIR
-. $DIR/healthcheck.sh
+echo $SCRIPT_DIR
+. $SCRIPT_DIR/healthcheck.sh
 npx prisma migrate deploy

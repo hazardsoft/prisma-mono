@@ -3,9 +3,6 @@ description: 'Install Playwright and all browsers'
 runs:
   using: composite
   steps:
-    - name: Change Directory to e2e
-      shell: bash
-      run: cd ${{ github.workspace }}/e2e
     - name: Install Playwright with browsers'
       shell: bash
-      run: pnpm dlx playwright install --with-deps 
+      run: cd ${{ github.workspace }}/e2e && pnpm dlx playwright install --with-deps

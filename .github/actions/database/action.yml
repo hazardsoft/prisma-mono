@@ -4,5 +4,5 @@ runs:
   using: composite
   steps:
     - name: Run Database
-      run: sh ${{ github.workspace }}/scripts/db-startup.sh
       shell: bash
+      run: . ${{ github.workspace }}/scripts/db-startup.sh

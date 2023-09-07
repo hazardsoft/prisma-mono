@@ -41,7 +41,7 @@ jobs:
         if: always()
         with:
           name: all-blob-reports
-          path: ${{ github.workspace }}/e2e/blob-report
+          path: e2e/blob-report
           retention-days: 3
   merge-e2e-reports:
     runs-on: ubuntu-latest
@@ -53,7 +53,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: all-blob-reports
-          path: ${{ github.workspace }}/e2e/all-blob-reports
+          path: e2e/all-blob-reports
       - name: Merge Reports
         run: npx playwright merge-reports --reporter=html,github ./all-blob-reports
         working-directory: e2e
@@ -61,5 +61,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: merged-report-attempt-${{ github.run_attempt }}
-          path: ${{ github.workspace }}/e2e/playwright-report
+          path: e2e/playwright-report
           retention-days: 3

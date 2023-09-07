@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1/1, 1/2, 1/3, 1/4]
+        shard: [1/4, 2/4, 3/4, 4/4]
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/build
@@ -55,7 +55,8 @@ jobs:
           name: all-blob-reports
           path: ${{ github.workspace }}/e2e/all-blob-reports
       - name: Merge Reports
-        run: cd e2e && npx playwright merge-reports --reporter=html,github ${{ github.workspace }}/e2e/all-blob-reports
+        run: npx playwright merge-reports --reporter=html,github ./all-blob-reports
+        working-directory: e2e
       - name: Upload Merged Reports
         uses: actions/upload-artifact@v3
         with:

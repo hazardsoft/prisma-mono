@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+echo "Healthcheck script is located at: $SCRIPT_DIR"
+
 CONTAINER_NAME=prisma-vitest-db
 HEALTHY_STATUS='"healthy"'
 

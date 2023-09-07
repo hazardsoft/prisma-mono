@@ -6,11 +6,11 @@ on:
 
 env:
   VITE_API_URL: http://localhost:3000
-  API_SECRET: 84f79269b107d58a9b40bda7ec7af0bf20fab80e323887e4b8219fefc65042d9
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  POSTGRES_DB: quotes
-  DATABASE_URL: postgres://postgres:postgres@localhost:5432/quotes
+  API_SECRET: ${{ secrets.API_SECRET }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
   CI: 1
 
 jobs:
@@ -24,8 +24,11 @@ jobs:
       - uses: ./.github/actions/docker-compose
       - name: Run integration tests
         run: pnpm test:backend:int
+
   e2e-tests:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.37.0-jammy
     strategy:
       fail-fast: false
       matrix:
@@ -34,7 +37,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/build
       - uses: ./.github/actions/docker-compose
-      - uses: ./.github/actions/playwright
+      # - uses: ./.github/actions/playwright
       - name: Run e2e tests
         run: pnpm test:e2e --shard=${{ matrix.shard }}
       - uses: actions/upload-artifact@v3
@@ -43,6 +46,7 @@ jobs:
           name: all-blob-reports
           path: e2e/blob-report
           retention-days: 3
+
   merge-e2e-reports:
     runs-on: ubuntu-latest
     if: always()

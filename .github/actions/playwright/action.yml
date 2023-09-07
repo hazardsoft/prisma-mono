@@ -5,4 +5,5 @@ runs:
   steps:
     - name: Install Playwright with browsers'
       shell: bash
-      run: cd ${{ github.workspace }}/e2e && pnpm dlx playwright install --with-deps
+      run: pnpm dlx playwright install --with-deps
+      working-directory: e2e

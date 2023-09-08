@@ -39,14 +39,14 @@ jobs:
         uses: ./.github/actions/install-deps
 
       - name: Run Unit Tests
-        run: pnpm dlx vitest --config ./vitest.config.unit.ts
+        run: npx vitest --config ./vitest.config.unit.ts
         working-directory: backend
 
       - name: Prisma Migrate Deploy
-        run: pnpm dlx prisma migrate deploy
+        run: npx prisma migrate deploy
 
       - name: Run Integration Tests
-        run: pnpm dlx vitest --config ./vitest.config.integration.ts
+        run: npx vitest --config ./vitest.config.integration.ts
         working-directory: backend
 
   e2e-tests:
@@ -79,11 +79,13 @@ jobs:
         uses: ./.github/actions/install-deps
 
       - name: Prisma Migrate Deploy
-        run: pnpm dlx prisma migrate deploy
+        run: npx prisma migrate deploy
 
       - name: Run E2e Tests
-        run: pnpm dlx playwright test --shard=${{ matrix.shard }}
+        run: npx playwright test --shard=${{ matrix.shard }}
         working-directory: e2e
+        env:
+          HOME: /root
 
       - uses: actions/upload-artifact@v3
         if: always()
@@ -97,15 +99,22 @@ jobs:
     if: always()
     needs: [e2e-tests]
     steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/build
-      - uses: actions/download-artifact@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install PNPM and Dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Download Playwright Blob Reports
+        uses: actions/download-artifact@v3
         with:
           name: all-blob-reports
           path: e2e/all-blob-reports
-      - name: Merge Reports
-        run: pnpm dlx playwright merge-reports --reporter=html,github ./all-blob-reports
+
+      - name: Merge Playwright Blob Reports Into HTML Report and GitHub Annotations
+        run: npx playwright merge-reports --reporter=html,github ./all-blob-reports
         working-directory: e2e
+
       - name: Upload Merged Reports
         uses: actions/upload-artifact@v3
         with:

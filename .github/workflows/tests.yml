@@ -5,12 +5,12 @@ on:
       - main
 
 env:
-  VITE_API_URL: http://localhost:3000
+  VITE_API_URL: ${{ vars.VITE_API_URL }}
   API_SECRET: ${{ secrets.API_SECRET }}
-  POSTGRES_USER: postgres
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-  POSTGRES_DB: quotes
-  DATABASE_URL: postgres://postgres:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/quotes
+  POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+  DATABASE_URL: postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ vars.POSTGRES_DB }}
   CI: 1
 
 jobs:
@@ -36,9 +36,9 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_USER: postgres
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: quotes
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
         options: >-
           --health-cmd pg_isready
           --health-interval 1s
@@ -46,14 +46,19 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v3
-      # - uses: ./.github/actions/build
-      - uses: ./.github/actions/install-deps
-      # - uses: ./.github/actions/docker-compose
-      # - uses: ./.github/actions/playwright
-      - name: Run e2e tests
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install PNPM and Dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Prisma Migrate Deploy
+        run: npx prisma migrate deploy
+
+      - name: Run E2e Tests
         run: npx playwright test --shard=${{ matrix.shard }}
         working-directory: e2e
+
       - uses: actions/upload-artifact@v3
         if: always()
         with:

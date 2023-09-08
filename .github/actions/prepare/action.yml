@@ -1,12 +1,16 @@
-name: 'Build'
+name: 'Prepare'
 description: 'Sets up the repository'
 runs:
   using: 'composite'
   steps:
-    - name: Install pnpm
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Install PNPM
       uses: pnpm/action-setup@v2
       with:
         version: latest
-    - name: Install dependencies
+    
+    - name: Install Dependencies
       shell: bash
       run: pnpm install

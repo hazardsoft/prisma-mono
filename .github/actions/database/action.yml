@@ -1,8 +1,0 @@
-name: 'Run Database'
-description: 'Runs PostgreSQL Database'
-runs:
-  using: composite
-  steps:
-    - name: Run Database
-      shell: bash
-      run: source ${{ github.workspace }}/scripts/db-startup.sh

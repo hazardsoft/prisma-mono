@@ -32,11 +32,8 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Install PNPM and Dependencies
-        uses: ./.github/actions/install-deps
+      - name: Checkout and Install Dependencies
+        uses: ./.github/actions/prepare
 
       - name: Run Unit Tests
         run: npx vitest --config ./vitest.config.unit.ts
@@ -72,11 +69,8 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Install PNPM and Dependencies
-        uses: ./.github/actions/install-deps
+      - name: Checkout and Install Dependencies
+        uses: ./.github/actions/prepare
 
       - name: Prisma Migrate Deploy
         run: npx prisma migrate deploy
@@ -99,11 +93,8 @@ jobs:
     if: always()
     needs: [e2e-tests]
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Install PNPM and Dependencies
-        uses: ./.github/actions/install-deps
+      - name: Checkout and Install Dependencies
+        uses: ./.github/actions/prepare
 
       - name: Download Playwright Blob Reports
         uses: actions/download-artifact@v3

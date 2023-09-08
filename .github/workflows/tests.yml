@@ -10,7 +10,7 @@ env:
   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
   POSTGRES_DB: ${{ vars.POSTGRES_DB }}
-  DATABASE_URL: postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres:5432/${{ vars.POSTGRES_DB }}
+  DATABASE_URL: postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres-service:5432/${{ vars.POSTGRES_DB }}
   CI: 1
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
     container: node:18
 
     services:
-      postgres:
+      postgres-service:
         image: postgres
         env:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
@@ -39,11 +39,14 @@ jobs:
         uses: ./.github/actions/install-deps
 
       - name: Run Unit Tests
-        run: vitest --config ./vitest.config.unit.ts
+        run: pnpm dlx vitest --config ./vitest.config.unit.ts
         working-directory: backend
 
+      - name: Prisma Migrate Deploy
+        run: pnpm dlx prisma migrate deploy
+
       - name: Run Integration Tests
-        run: vitest --config ./vitest.config.integration.ts
+        run: pnpm dlx vitest --config ./vitest.config.integration.ts
         working-directory: backend
 
   e2e-tests:
@@ -56,7 +59,7 @@ jobs:
         shard: [1/4, 2/4, 3/4, 4/4]
 
     services:
-      postgres:
+      postgres-service:
         image: postgres
         env:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
@@ -76,10 +79,10 @@ jobs:
         uses: ./.github/actions/install-deps
 
       - name: Prisma Migrate Deploy
-        run: npx prisma migrate deploy
+        run: pnpm dlx prisma migrate deploy
 
       - name: Run E2e Tests
-        run: npx playwright test --shard=${{ matrix.shard }}
+        run: pnpm dlx playwright test --shard=${{ matrix.shard }}
         working-directory: e2e
 
       - uses: actions/upload-artifact@v3
@@ -101,7 +104,7 @@ jobs:
           name: all-blob-reports
           path: e2e/all-blob-reports
       - name: Merge Reports
-        run: npx playwright merge-reports --reporter=html,github ./all-blob-reports
+        run: pnpm dlx playwright merge-reports --reporter=html,github ./all-blob-reports
         working-directory: e2e
       - name: Upload Merged Reports
         uses: actions/upload-artifact@v3

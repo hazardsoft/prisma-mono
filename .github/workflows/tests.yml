@@ -16,22 +16,45 @@ env:
 jobs:
   unit-and-integration-tests:
     runs-on: ubuntu-latest
+    container: node:18
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 1s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/build
-      - name: Run unit tests
-        run: pnpm test:backend:unit
-      - uses: ./.github/actions/docker-compose
-      - name: Run integration tests
-        run: pnpm test:backend:int
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install PNPM and Dependencies
+        uses: ./.github/actions/install-deps
+
+      - name: Run Unit Tests
+        run: vitest --config ./vitest.config.unit.ts
+        working-directory: backend
+
+      - name: Run Integration Tests
+        run: vitest --config ./vitest.config.integration.ts
+        working-directory: backend
 
   e2e-tests:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:v1.37.0-jammy
+
     strategy:
       fail-fast: false
       matrix:
         shard: [1/4, 2/4, 3/4, 4/4]
+
     services:
       postgres:
         image: postgres

@@ -48,3 +48,75 @@ jobs:
       - name: Run Integration Tests
         run: npx vitest --config ./vitest.config.integration.ts
         working-directory: backend
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.37.0-jammy
+
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1/4, 2/4, 3/4, 4/4]
+
+    services:
+      postgres-service:
+        image: postgres
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 1s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        uses: ./.github/actions/prepare
+
+      - name: Prisma Migrate Deploy
+        run: npx prisma migrate deploy
+
+      - name: Run E2e Tests
+        run: npx playwright test --shard=${{ matrix.shard }}
+        working-directory: e2e
+        env:
+          HOME: /root
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: all-blob-reports
+          path: e2e/blob-report
+          retention-days: 3
+
+  merge-e2e-reports:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [e2e-tests]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        uses: ./.github/actions/prepare
+
+      - name: Download Playwright Blob Reports
+        uses: actions/download-artifact@v3
+        with:
+          name: all-blob-reports
+          path: e2e/all-blob-reports
+
+      - name: Merge Playwright Blob Reports Into HTML Report and GitHub Annotations
+        run: npx playwright merge-reports --reporter=html,github ./all-blob-reports
+        working-directory: e2e
+
+      - name: Upload Merged Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: merged-report-attempt-${{ github.run_attempt }}
+          path: e2e/playwright-report
+          retention-days: 3

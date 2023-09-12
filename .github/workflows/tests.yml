@@ -37,12 +37,12 @@ jobs:
       - name: Install Dependencies
         uses: ./.github/actions/prepare
 
+      - name: Prisma Migrate Deploy
+        run: npx prisma migrate deploy
+
       - name: Run Unit Tests
         run: npx vitest --config ./vitest.config.unit.ts
         working-directory: backend
-
-      - name: Prisma Migrate Deploy
-        run: npx prisma migrate deploy
 
       - name: Run Integration Tests
         run: npx vitest --config ./vitest.config.integration.ts

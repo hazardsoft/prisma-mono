@@ -3,6 +3,11 @@ description: 'Sets up the repository'
 runs:
   using: 'composite'
   steps:
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        version: 18
+
     - name: Install PNPM
       uses: pnpm/action-setup@v2
       with:

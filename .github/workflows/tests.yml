@@ -120,3 +120,26 @@ jobs:
           name: merged-report-attempt-${{ github.run_attempt }}
           path: e2e/playwright-report
           retention-days: 3
+
+  send-notifications:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [unit-and-integration-tests, e2e-tests]
+    steps:
+      - name: Send Slack notification
+        if: always()
+        uses: edge/simple-slack-notify@master
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel: '#github_actions'
+          status: ${{ job.status }}
+          success_text: Build completed successfully
+          failure_text: 'Build failed'
+          cancelled_text: 'Build was cancelled'
+          fields: |
+            [
+              { "title": "Repository", "value": "${env.GITHUB_REPOSITORY}", "short": true },
+              { "title": "Branch", "value": "${env.BRANCH}", "short": true },
+              { "title": "Action URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}"}
+            ]
